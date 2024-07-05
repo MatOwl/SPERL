@@ -36,22 +36,9 @@ The updates (10) and (11) in our paper are parallel to the 1st-2nd row of equati
 ```
 Update formula (12) is obtained by substituting equations (8) and (9) into formula (7). 
 
-\begin{algorithm}
-\caption{{\tt MVarEPG}: Mean-Variance Globally Optimal Control}
-\label{alg: EPG-Tamar}
-\begin{algorithmic}[1] 
-    \STATE {\bfseries Input:} MDP simulator, $\lambda$, $T$, learning rates $\alpha, \beta$
-    \STATE {\bfseries Output:} Converged policy parameter, $\theta$.
-    \STATE Initialize $\theta$ and $J, K$ (for approxEPG)\; 
-    \WHILE{$\theta$ not stable}
-        \STATE Sample trajectories $x_0,\! A_0,\!\dotso\!,\!X_{T-1},\!A_{T-1},\!X_T\!\sim\! \boldsymbol{\pi}_{\theta}$ \label{l: episodically}
-        \STATE Update $\theta$ with (7) (for trueEPG)
-        \STATE Update $J, K, \theta$ with (10)-(12) (for approxEPG)
-    \ENDWHILE
-\end{algorithmic}
-\end{algorithm}
+![Images](graph/readmeFigure/algo1.png)
 
-Our two EPG versions, i.e., trueEPG and approxEPG, are summarized through Algorithm above. For our implementation, we set $`\mu_\theta(a|x) \coloneqq \frac{\exp\left(-\theta^T \phi(x, a)\right) + \varepsilon}{\sum_{\tilde{a}} \exp\left(-\theta^T \phi(x,\tilde{a})\right) +  \varepsilon |\mathcal{A}|}`$ following [Tamar et al., 2012], with small $\epsilon = 0.001$. To match the tabular setup in SPERL algorithm, $\phi(x, a)$ is a one-hot representation with $\theta \in \mathbb{R}^{|\mathcal{X}|\times|\mathcal{A}|}$.
+Our two EPG versions, i.e., trueEPG and approxEPG, are summarized through Algorithm 1 above. For our implementation, we set $`\mu_\theta(a|x) \coloneqq \frac{\exp\left(-\theta^T \phi(x, a)\right) + \varepsilon}{\sum_{\tilde{a}} \exp\left(-\theta^T \phi(x,\tilde{a})\right) +  \varepsilon |\mathcal{A}|}`$ following [Tamar et al., 2012], with small $\epsilon = 0.001$. To match the tabular setup in SPERL algorithm, $\phi(x, a)$ is a one-hot representation with $\theta \in \mathbb{R}^{|\mathcal{X}|\times|\mathcal{A}|}$.
 
 Specifically, the expectations in this EPG method can be computed by the law of total probability, by considering all possible trajectories $\xi$ starting with $X_0 = x$,
 ```math
@@ -78,7 +65,7 @@ It was suggested by [Tamar et al., 2012] that a decreasing learning rate is need
 ### SPERL
 
 
-In our PE step, we applied a similar technique to [Tamar et al., 2016; Sobel, 1982], differing in that we are predicting a finite-horizon Q-function instead of an infinite-horizon value function. Correspondingly, note that Proposition 2 is a finite-horizon, tabular, Q-function version of Proposition 2 of [Tamar et al., 2016]. To account for some environment setups, rewards may also depend on $x'$, in which case Proposition 2 can be slightly adjusted as follows, \footnotesize
+In our PE step, we applied a similar technique to [Tamar et al., 2016; Sobel, 1982], differing in that we are predicting a finite-horizon Q-function instead of an infinite-horizon value function. Correspondingly, note that Proposition 2 is a finite-horizon, tabular, Q-function version of Proposition 2 of [Tamar et al., 2016]. To account for some environment setups, rewards may also depend on $x'$, in which case Proposition 2 can be slightly adjusted as follows,
 ```math
 \begin{alignat*}{3}
 J^{\boldsymbol{\pi}}_t(x,a) &=  \sum_{x'\in\mathcal{S}} &&P^a[t+1,x'|t,x] \left(r_{t}(x,a,x') \right.\\
@@ -88,52 +75,16 @@ M^{\boldsymbol{\pi}}_t(x,a) &= \sum_{x'\in\mathcal{S}}&&P^a[t+1,x'|t,x] \left(r^
 &  &&\left. + 2\gamma r_{t}(x,a,x') J^{\boldsymbol{\pi}}_{t+1}(x', \pi_{t+1}(x'))\right)
 \end{alignat*}
 ```
-Our PE extends the PE step in [Lesmana and Pun, 2021] (which handles the variance of terminal wealth) to account for the variance of accumulated rewards. Algorithm \ref{alg:TD0} summarizes SPERL's PE method.
 
-Our PI step draws directly on [Lesmana and Pun, 2021]'s characterization of equilibrium by greedy action selection, summarized in Algorithm \ref{alg:BwUpdate}.
+Our PE extends the PE step in [Lesmana and Pun, 2021] (which handles the variance of terminal wealth) to account for the variance of accumulated rewards. Algorithm 2 summarizes SPERL's PE method.
 
-**Remark** The convergence of Algorithm \ref{alg:BwUpdate} to equilibrium is guaranteed by [Lesmana and Pun, 2021] when line \ref{VarSPERL-l7}-\ref{VarSPERL-l8} implemented with full sweeps over all possible $x, a, x', a'$. Without full sweeps (in the sample-based case), convergence results are only present for PE by [Tamar et al., 2016]. As both results do not extend trivially to our case, the convergence of {\tt MVarSPERL} remains open.
+Our PI step draws directly on [Lesmana and Pun, 2021]'s characterization of equilibrium by greedy action selection, summarized in Algorithm 3.
 
-\begin{algorithm}[tb]
-\caption{{\tt MVarPE}: Mean-Variance Policy Evaluation
-}
-\label{alg:TD0}
-\begin{algorithmic}[1] 
-\STATE {\bfseries Input:} MDP simulator, $\lambda$, fixed policy $\boldsymbol{\pi}$, 
-learning rate $\alpha_J, \alpha_M$ \; 
-\STATE {\bfseries Output:} Q-function estimates $Q_t(x, a),\forall t, x, a$\;
-\STATE Initialize $J(t,x,a), M(t,x,a)\ \leftarrow 0, \forall t < T, x, a$\;
-\STATE Set $J(T, x, \cdot), M(T, x, \cdot) \gets r_T(x), r^2_T(x), \forall x$
-\FOR{$(t, x, a, t+1, x', a') \sim \boldsymbol{\pi}$}
-     \STATE Compute $\delta_J(t,x,a), \delta_M(t,x,a)$ by (16)\; \label{VarPE-l5}
-     \STATE $J(t,x,a) \leftarrow J(t,x,a) + \alpha_J\delta_J(t,x,a)$ \label{VarPE-l6}
-     \STATE $M(t,x,a) \leftarrow M(t,x,a) + \alpha_M\delta_M(t,x,a)$\; \label{VarPE-l6.1}
-     \STATE $Q_t(x,a)\leftarrow J(t,x,a) - \lambda \left( M(t,x,a) - J(t,x,a)^2\right)$\; \label{VarPE-l7}
-\ENDFOR
-\end{algorithmic}
-\end{algorithm}
+**Remark** The convergence of Algorithm 3 to equilibrium is guaranteed by [Lesmana and Pun, 2021] when line 8-9 implemented with full sweeps over all possible $x, a, x', a'$. Without full sweeps (in the sample-based case), convergence results are only present for PE by [Tamar et al., 2016]. As both results do not extend trivially to our case, the convergence of {\tt MVarSPERL} remains open.
 
-\begin{algorithm}
-\caption{
-{\tt MVarSPERL}: Mean-Variance Equilibrium Control}
-\label{alg:BwUpdate}
-\begin{algorithmic}[1] 
-    \STATE {\bfseries Input:} MDP simulator, $\lambda$, horizon $T$, learning rates $\alpha_J, \alpha_M$\;
-    \STATE {\bfseries Output:} Approximate Equilibrium $\boldsymbol{\pi}$\;
-    \STATE Initialize $\boldsymbol{\pi}, J, M$ 
-    \WHILE{$\boldsymbol{\pi}$ not stable}
-    \STATE Sample trajectories $x_0,\! A_0,\!\dotso\!,\!X_{T-1},\!A_{T-1},\!X_T\!\sim\! \boldsymbol{\pi}_{\theta}$ \label{VarSPERL-l5}
-    \STATE Update \small $J(T, X_T, \cdot), M(T, X_T, \cdot) \gets r_T(X_T), r^2_T(X_T)$ \normalsize
-    \FOR{$t \leftarrow T-1$ to $0$}
-        \STATE Set $x=X_t, a=A_t, x'=X_{t+1}, a'=A_{t+1}$ \label{VarSPERL-l7}
-        \STATE Compute $Q_t(x, a)$ by Algorithm \ref{alg:TD0}, line \ref{VarPE-l5}-\ref{VarPE-l7} \label{VarSPERL-l8}\;
-        \IF{$Q_t(x, \pi_t(x)) > Q_t(x, a)$}
-        \STATE Update $\pi_t(x) \gets \arg\max_a Q_t(x, a)$ \label{l: greedy-act}
-        \ENDIF
-    \ENDFOR
-    \ENDWHILE
-\end{algorithmic}
-\end{algorithm}
+![Images](graph/readmeFigure/algo2.png)
+
+![Images](graph/readmeFigure/algo3.png)
  
 
 ## Empirical Study
