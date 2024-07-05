@@ -2,16 +2,16 @@
 
 ## Agents
 
-Following, we provide further details on the MV agents. Full implementation can be found in the supplementary\footnote{For EPG variants and SPERL, initializations, learning rates, and trajectory generations are tuned according to our specific environments; please refer to run-main.py.}.
+Following, we provide further details on the MV agents. Full implementation can be found in the supplementary. (For EPG variants and SPERL, initializations, learning rates, and trajectory generations are tuned according to our specific environments; please refer to run-main.py.)
 
 ### EPG
-Both the trueEPG and approxEPG in this paper were modified from \cite{t:12} with specifications made according to our environments. The objective (6) in the main paper is parallel to $f_\lambda$ in \cite[Section 4.2]{t:12},
+Both the trueEPG and approxEPG in this paper were modified from \cite{t:12} with specifications made according to our environments. The objective (6) in the main paper is parallel to $f_\lambda$ in Section 4.2 in \cite{t:12},
 ```math
-    f_\lambda \coloneqq J(x^*) - \lambda g(V(x^*-b)) \label{eq: f-lmbd}
+    f_\lambda \coloneqq J(x^*) - \lambda g(V(x^*-b))
 ```
-For our context, we set the function $g(\cdot)$ in (\ref{eq: f-lmbd}) to be the identity function $g(x) = x$, $b=0$, $`x^*`$ replaced by $`x_0`$, and $`J, V`$ referred to as $`J, K`$. With these specifications, the updates in \cite[Eq. (13)]{t:12} become the updates in (10)-(12) in our work. Another distinction between our work and \cite{t:12} is that we deal with a finite horizon problem, while they deal with an infinite horizon problem. Our finite-horizon modification is realized by making the given initial state $x_0$ a recurrent state $x^*$ and setting the transition probability from any state to $x_0$ at time $t=T$ to $1$. As such, our modification will not affect the theoretical properties of the original EPG algorithm.
+For our context, we set the function $g(\cdot)$ in the equation above to be the identity function $g(x) = x$, $b=0$, $`x^*`$ replaced by $`x_0`$, and $`J, V`$ referred to as $`J, K`$. With these specifications, the updates in equation (13) \cite{t:12} become the updates in (10)-(12) in our work. Another distinction between our work and \cite{t:12} is that we deal with a finite horizon problem, while they deal with an infinite horizon problem. Our finite-horizon modification is realized by making the given initial state $x_0$ a recurrent state $x^*$ and setting the transition probability from any state to $x_0$ at time $t=T$ to $1$. As such, our modification will not affect the theoretical properties of the original EPG algorithm.
 
-The equations (8) and (9) in our paper are parallel to \cite[Lemma 4.2]{t:12}. In particular, we can unpack the expectation of cumulative reward as the sum of all possible cumulative rewards weighted by the probability of all possible trajectories. Then, $\nabla J(x)$ can be expressed as follows,
+The equations (8) and (9) in our paper are parallel to Lemma 4.2 of \cite{t:12}. In particular, we can unpack the expectation of cumulative reward as the sum of all possible cumulative rewards weighted by the probability of all possible trajectories. Then, $\nabla J(x)$ can be expressed as follows,
 ```math
 \begin{align*}
     \nabla J(x) 
@@ -25,7 +25,7 @@ The equations (8) and (9) in our paper are parallel to \cite[Lemma 4.2]{t:12}. I
 ```
 Since $P[\xi|X_0 = x] \coloneqq \Pi_{t\in \mathcal{T}} P[x_{t+1}|x_t, a_t] \mu_{\theta}(a_t | x_t)$ and the transition probability is independent of $\theta$, $\nabla \log P[\xi|X_0 = x] = \sum_{t\in \mathcal{T}} \nabla \log \mu_{\theta}(a_t|x_t)$. The formula for $\nabla K(x)$ can be obtained similarly. Note that $\nabla J(x)$ and $\nabla K(x)$ derivations follow directly from \cite{t:12} and the change related to our finite-horizon problem is fully absorbed by the trajectories $\xi$.
 
-The updates (10) and (11) in our paper are parallel to the 1st-2nd row of \cite[Eq. (13)]{t:12}; they are iterative estimation schemes with targets obtained from the definitions of $J^{\theta}, K^{\theta}$ in Section 5,
+The updates (10) and (11) in our paper are parallel to the 1st-2nd row of equation (13) in \cite{t:12}; they are iterative estimation schemes with targets obtained from the definitions of $J^{\theta}, K^{\theta}$ in Section 5,
 ```math
 \begin{align*}
     J^{\theta}(x_0) &=\mathbb{E}[R^{\pi_\theta}_0(x_0)]\\
@@ -36,7 +36,7 @@ The updates (10) and (11) in our paper are parallel to the 1st-2nd row of \cite[
 ```
 Update formula (12) is obtained by substituting equations (8) and (9) into formula (7). 
 
-\begin{algorithm}[b]
+\begin{algorithm}
 \caption{{\tt MVarEPG}: Mean-Variance Globally Optimal Control}
 \label{alg: EPG-Tamar}
 \begin{algorithmic}[1] 
@@ -50,7 +50,7 @@ Update formula (12) is obtained by substituting equations (8) and (9) into formu
     \ENDWHILE
 \end{algorithmic}
 \end{algorithm}
-Our two EPG versions, i.e., trueEPG and approxEPG, are summarized through Algorithm \ref{alg: EPG-Tamar}. For our implementation, we set $\mu_\theta(a|x) \coloneqq \frac{\exp\left(-\theta^T \phi(x, a)\right) + \varepsilon}{\sum_{\tilde{a}} \exp\left(-\theta^T \phi(x,\tilde{a})\right) +  \varepsilon |\mathcal{A}|}$ following \cite{t:12}, with small $\epsilon = 0.001$. To match the tabular setup in SPERL algorithm, $\phi(x, a)$ is a one-hot representation with $\theta \in \mathbb{R}^{|\mathcal{X}|\times|\mathcal{A}|}$.
+Our two EPG versions, i.e., trueEPG and approxEPG, are summarized through Algorithm above. For our implementation, we set $\mu_\theta(a|x) \coloneqq \frac{\exp\left(-\theta^T \phi(x, a)\right) + \varepsilon}{\sum_{\tilde{a}} \exp\left(-\theta^T \phi(x,\tilde{a})\right) +  \varepsilon |\mathcal{A}|}$ following \cite{t:12}, with small $\epsilon = 0.001$. To match the tabular setup in SPERL algorithm, $\phi(x, a)$ is a one-hot representation with $\theta \in \mathbb{R}^{|\mathcal{X}|\times|\mathcal{A}|}$.
 
 Specifically, the expectations in this EPG method can be computed by the law of total probability, by considering all possible trajectories $\xi$ starting with $X_0 = x$,
 ```math
