@@ -80,7 +80,7 @@ Our PE extends the PE step in [Lesmana and Pun, 2021] (which handles the varianc
 
 Our PI step draws directly on [Lesmana and Pun, 2021]'s characterization of equilibrium by greedy action selection, summarized in Algorithm 3.
 
-**Remark** The convergence of Algorithm 3 to equilibrium is guaranteed by [Lesmana and Pun, 2021] when line 8-9 implemented with full sweeps over all possible $x, a, x', a'$. Without full sweeps (in the sample-based case), convergence results are only present for PE by [Tamar et al., 2016]. As both results do not extend trivially to our case, the convergence of {\tt MVarSPERL} remains open.
+**Remark** The convergence of Algorithm 3 to equilibrium is guaranteed by [Lesmana and Pun, 2021] when line 8-9 implemented with full sweeps over all possible $x, a, x', a'$. Without full sweeps (in the sample-based case), convergence results are only present for PE by [Tamar et al., 2016]. As both results do not extend trivially to our case, the convergence of Algorithm 3 remains open.
 
 ![Images](graph/readmeFigure/algo2.png)
 
