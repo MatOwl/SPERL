@@ -1,7 +1,7 @@
 # SPERL
 
 ## Quick start
-This is the scripts supplementing a paper submission to ICAIF'24. To replicate the empirical result on the paper, run the file `RunMain.py` with Python. 
+This is the scripts supplementing a paper submission to ICAIF'24. To replicate the empirical result on the paper, readers may run the file `RunMain.py` with Python. 
 
 Each file serves the following purpose:
 - `RunMain.py`: Run this file to run the experiment (more technical detials are written as comments in this file)
