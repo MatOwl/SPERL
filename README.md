@@ -16,4 +16,4 @@ Each file serves the following purpose:
 - `tools.py`: functions repeatedly used in different scripts (such as generating trajectories);
 - `.npy` files: trained models for specific environment setups (more are stored in the `seedxxx` folders).
 
-Following, we provide further details on the MV agents and environments. Full implementation can be found in the scripts on this page and detailed descriptions can be found in `Supplementary Material.pdf`. (For EPG variants and SPERL, initializations, learning rates, and trajectory generations are tuned according to our specific environments; please refer to `run-main.py`.)
+Full implementation can be found in the scripts on this page and detailed descriptions can be found in `Supplementary Material.pdf`. (For EPG variants and SPERL, initializations, learning rates, and trajectory generations are tuned according to our specific environments; please refer to `run-main.py`.)
