@@ -14,6 +14,6 @@ Each file serves the following purpose:
 - `cubes.py`: scritps for plotting figure 3 and 4 in the main paper;
 - `plotting.py`: functions related to plotting (except for plotting cubes);
 - `tools.py`: functions repeatly used in different scripts;
-- `.npy` files: trained models for specific environment setups.
+- `.npy` files: trained models for specific environment setups (more are stored in the folders named as `seedxxx`).
 
 Following, we provide further details on the MV agents and environments. Full implementation can be found in the scripts in this page and detialed descriptions can be found in `Supplementary Material.pdf`. (For EPG variants and SPERL, initializations, learning rates, and trajectory generations are tuned according to our specific environments; please refer to `run-main.py`.)
