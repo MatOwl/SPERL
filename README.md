@@ -21,7 +21,7 @@ More details can be found in `Supplementary Material.pdf`. For all EPG variants 
 
 If you find any information from this repo helpful, please cite our work:
 ```
-@inproceedings{10.1145/3677052.3698657, <br>
+@inproceedings{10.1145/3677052.3698657,
 author = {Tang, Jingxiang and Lesmana, Nixie S and Pun, Chi Seng}, <br>
 title = {Navigating the Difficulty of Achieving Global Optimality under Variance-Induced Time Inconsistency}, <br>
 year = {2024}, <br>
