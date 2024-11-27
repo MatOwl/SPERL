@@ -19,7 +19,7 @@ Each file serves the following purpose:
 
 More details can be found in `Supplementary Material.pdf`. For all EPG variants and SPERL, initializations, learning rates, and trajectory generations are tuned according to the specific environments; please refer to `run-main.py`.
 
-If you find any information from this repo helpful, please cite our work:
+If you find any information from this repo helpful, please cite our work: <h6>
 > @inproceedings{10.1145/3677052.3698657, <br>
 author = {Tang, Jingxiang and Lesmana, Nixie S and Pun, Chi Seng}, <br>
 title = {Navigating the Difficulty of Achieving Global Optimality under Variance-Induced Time Inconsistency}, <br>
